@@ -57,40 +57,52 @@ jobs:
           cd backend
           pip install -r requirements.txt
           
-      - name: Debug Secrets
+      - name: Verify deployment secrets
         run: |
+          echo "Verifying deployment secrets..."
           if [ -n "${{ secrets.DEPLOY_HOST }}" ]; then
-            echo "DEPLOY_HOST is set"
+            echo "✓ DEPLOY_HOST is properly configured"
           else
-            echo "DEPLOY_HOST is not set"
+            echo "✗ DEPLOY_HOST is not set"
+            exit 1
+          fi
+          if [ -n "${{ secrets.DEPLOY_USERNAME }}" ]; then
+            echo "✓ DEPLOY_USERNAME is properly configured"
+          else
+            echo "✗ DEPLOY_USERNAME is not set"
+            exit 1
+          fi
+          if [ -n "${{ secrets.DEPLOY_PASSWORD }}" ]; then
+            echo "✓ DEPLOY_PASSWORD is properly configured"
+          else
+            echo "✗ DEPLOY_PASSWORD is not set"
             exit 1
           fi
           
       - name: Deploy to server
         uses: appleboy/ssh-action@master
-        env:
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USERNAME }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
-          envs: DEPLOY_HOST
           debug: true
           script: |
-            echo "Starting deployment on $DEPLOY_HOST..."
+            echo "Starting deployment on ${{ secrets.DEPLOY_HOST }}..."
             cd /var/www/viber
             git pull origin main
             
-            # Frontend deployment
+            echo "Deploying frontend..."
             cd frontend
             npm install
             npm run build
             
-            # Backend deployment
+            echo "Deploying backend..."
             cd ../backend
             source venv/bin/activate
             pip install -r requirements.txt
             
-            # Restart services
+            echo "Restarting services..."
             sudo systemctl restart nginx
             sudo systemctl restart viber-backend.service
+            
+            echo "Deployment completed successfully!"
