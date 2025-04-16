@@ -63,6 +63,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USERNAME }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           script: |
+            echo "Starting deployment..."
             cd /var/www/viber
             git pull origin main
             
