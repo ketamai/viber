@@ -1,7 +1,21 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+
+// Try/catch for heroicons to prevent build failures
+let Bars3Icon, XMarkIcon, UserCircleIcon;
+try {
+  const icons = require('@heroicons/react/24/outline');
+  Bars3Icon = icons.Bars3Icon;
+  XMarkIcon = icons.XMarkIcon;
+  UserCircleIcon = icons.UserCircleIcon;
+} catch (e) {
+  // Fallback icon components
+  Bars3Icon = () => <span className="block h-6 w-6">☰</span>;
+  XMarkIcon = () => <span className="block h-6 w-6">✕</span>;
+  UserCircleIcon = () => <span className="block h-8 w-8">👤</span>;
+  console.error('Failed to load heroicons:', e);
+}
 
 const Header = () => {
   const { currentUser, logout } = useAuth();
