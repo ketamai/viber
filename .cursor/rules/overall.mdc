@@ -8,5 +8,5 @@ alwaysApply: true
 - automatically commit all changes to github
 
 # Github
-- repo: Viber
+- repo: https://github.com/ketamai/viber
 - Use github workflows to deploy to 91.99.60.5 over ssh with credentials root/Arabin32
