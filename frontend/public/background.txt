@@ -1,0 +1,7 @@
+The Viber app requires background images that are referenced in the CSS.
+
+Please add the following files:
+- parchment-bg.jpg
+- wow-pattern.png
+
+The app has been updated to have fallbacks, but adding these files will improve the visual appearance. 

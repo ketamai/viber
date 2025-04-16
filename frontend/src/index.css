@@ -2,11 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font face with error handling */
 @font-face {
   font-family: 'LifeCraft';
-  src: url('./assets/fonts/LifeCraft_Font.ttf') format('truetype');
+  src: local('Helvetica Neue'), local('Arial'),
+       url('./assets/fonts/LifeCraft_Font.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 html, body {
@@ -23,7 +26,7 @@ html, body {
 /* Custom Utility Classes */
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-md shadow-wow transition-all duration-200 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply px-4 py-2 rounded-md shadow-md transition-all duration-200 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
   
   .btn-primary {
@@ -47,15 +50,20 @@ html, body {
   }
   
   .card {
-    @apply bg-wow-brown rounded-lg shadow-wow p-4 border border-neutral/30;
+    @apply bg-wow-brown rounded-lg shadow p-4 border border-neutral/30;
   }
   
   .card-parchment {
-    @apply bg-parchment bg-cover rounded-lg shadow-wow p-4 text-wow-brown;
+    @apply bg-wow-brown rounded-lg shadow p-4 text-wow-light;
   }
   
   .title-wow {
     @apply font-wow text-wow-gold;
+  }
+
+  /* Default font fallbacks */
+  .font-wow {
+    font-family: 'LifeCraft', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
   }
 }
 

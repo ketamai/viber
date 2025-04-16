@@ -15,12 +15,8 @@ module.exports = {
         'neutral': '#85754d',
       },
       fontFamily: {
-        'wow': ['LifeCraft', 'serif'],
-        'body': ['Roboto', 'sans-serif'],
-      },
-      backgroundImage: {
-        'parchment': "url('/src/assets/parchment-bg.jpg')",
-        'wow-pattern': "url('/src/assets/wow-pattern.png')",
+        'wow': ['LifeCraft', 'Palatino Linotype', 'Book Antiqua', 'Palatino', 'serif'],
+        'body': ['Roboto', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'wow': '0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4)',
