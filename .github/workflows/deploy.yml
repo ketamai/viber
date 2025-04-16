@@ -1,4 +1,4 @@
-name: Deploy to Server
+name: Deploy to Production
 
 on:
   push:
@@ -9,9 +9,35 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install Node.js dependencies
+      run: |
+        cd frontend
+        npm install
+        
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm run build
+        
     - name: Deploy to server
       uses: appleboy/ssh-action@master
       with:
@@ -19,7 +45,20 @@ jobs:
         username: root
         password: ${{ secrets.SSH_PASSWORD }}
         script: |
-          cd /opt/Viber
+          cd /var/www/viber
           git pull
-          docker-compose down
-          docker-compose up -d --build 
+          
+          # Backend deployment
+          cd backend
+          source venv/bin/activate
+          pip install -r requirements.txt
+          flask db upgrade
+          
+          # Frontend deployment
+          cd ../frontend
+          npm install
+          npm run build
+          
+          # Restart services
+          systemctl restart viber-backend
+          systemctl restart nginx 

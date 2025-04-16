@@ -1,9 +1,12 @@
 # Viber - WoW Character Backstory & RP Event Platform
 
+A modern communication platform designed for Turtle WoW private server players to enhance their role-playing experience.
+
 ## Overview
-Viber is a web application designed for Turtle WoW private server players to enhance their role-playing experience. The platform allows players to create and share detailed character backstories, organize role-playing events, RSVP to community events, and connect with other role-players.
+Viber allows players to create and share detailed character backstories, organize role-playing events, RSVP to community events, and connect with other role-players.
 
 ## Features
+
 - **User Authentication & Profiles**
   - Account creation with email verification
   - Character profiles linked to Turtle WoW characters
@@ -23,12 +26,16 @@ Viber is a web application designed for Turtle WoW private server players to enh
   - Following favorite character stories
   - Commenting on backstories
   - Guild pages for collective roleplay
+  - Real-time messaging between players
+  - Group chats for guilds and events
 
 ## Tech Stack
+
 - **Frontend**: React with Tailwind CSS
 - **Backend**: Python with Flask
 - **Database**: MySQL
 - **Authentication**: JWT
+- **Real-time communication**: Socket.IO
 
 ## Getting Started
 
@@ -41,7 +48,7 @@ Viber is a web application designed for Turtle WoW private server players to enh
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/Viber.git
+git clone https://github.com/jessearbon/Viber.git
 cd Viber
 ```
 
@@ -102,5 +109,10 @@ Viber/
 ## Deployment
 The application is deployed using GitHub workflows to deploy to the production server.
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details. 
+
+This project is licensed under the MIT License - see the LICENSE file for details.
