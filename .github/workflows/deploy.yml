@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
     
     steps:
       - uses: actions/checkout@v3
@@ -56,14 +57,27 @@ jobs:
           cd backend
           pip install -r requirements.txt
           
+      - name: Debug Secrets
+        run: |
+          if [ -n "${{ secrets.DEPLOY_HOST }}" ]; then
+            echo "DEPLOY_HOST is set"
+          else
+            echo "DEPLOY_HOST is not set"
+            exit 1
+          fi
+          
       - name: Deploy to server
         uses: appleboy/ssh-action@master
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USERNAME }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
+          envs: DEPLOY_HOST
+          debug: true
           script: |
-            echo "Starting deployment..."
+            echo "Starting deployment on $DEPLOY_HOST..."
             cd /var/www/viber
             git pull origin main
             
