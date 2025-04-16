@@ -82,4 +82,4 @@ jobs:
           systemctl restart viber-backend
           systemctl restart nginx
           
-          echo "Deployment completed successfully!" 
+          echo "Deployment completed successfully!"
