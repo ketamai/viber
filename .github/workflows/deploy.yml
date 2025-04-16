@@ -57,28 +57,12 @@ jobs:
           cd backend
           pip install -r requirements.txt
           
-      - name: Verify deployment credentials
-        run: |
-          echo "Verifying deployment credentials..."
-          if [ -n "${{ secrets.DEPLOY_USERNAME }}" ]; then
-            echo "✓ DEPLOY_USERNAME is properly configured"
-          else
-            echo "✗ DEPLOY_USERNAME is not set"
-            exit 1
-          fi
-          if [ -n "${{ secrets.DEPLOY_PASSWORD }}" ]; then
-            echo "✓ DEPLOY_PASSWORD is properly configured"
-          else
-            echo "✗ DEPLOY_PASSWORD is not set"
-            exit 1
-          fi
-          
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
           host: 91.99.60.5
-          username: ${{ secrets.DEPLOY_USERNAME }}
-          password: ${{ secrets.DEPLOY_PASSWORD }}
+          username: root
+          password: Arabin32
           debug: true
           script: |
             echo "Starting deployment on 91.99.60.5..."
