@@ -9,77 +9,64 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
-        
+    - uses: actions/checkout@v2
+    
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v2
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: 'frontend/package.json'
-        
-    - name: Install Node.js dependencies
-      run: |
-        cd frontend
-        npm install
-        
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+        cache: 'pip'
+        cache-dependency-path: backend/requirements.txt
+    
+    - name: Install frontend dependencies
+      working-directory: frontend
+      run: npm ci
+    
+    - name: Install backend dependencies
+      working-directory: backend
+      run: pip install -r requirements.txt
+    
     - name: Build frontend
-      run: |
-        cd frontend
-        DISABLE_ESLINT_PLUGIN=true CI=false npm run build
-        
-    - name: Verify build
-      run: |
-        if [ ! -d "frontend/build" ]; then
-          echo "Build directory not created. Build may have failed."
-          exit 1
-        fi
-        echo "Build successful! Contents of build directory:"
-        ls -la frontend/build
-        
+      working-directory: frontend
+      run: npm run build
+    
     - name: Deploy to server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USERNAME }}
         password: ${{ secrets.DEPLOY_PASSWORD }}
-        script_stop: true
         script: |
-          echo "Starting deployment process..."
-          cd /var/www/viber || { echo "Failed to change directory to /var/www/viber"; exit 1; }
+          set -e  # Exit on any error
           
-          echo "Pulling latest code..."
-          git pull
+          echo "Starting deployment..."
+          cd /var/www/viber
           
-          # Backend deployment
+          echo "Pulling latest changes..."
+          git pull origin main
+          
           echo "Deploying backend..."
-          cd backend || { echo "Failed to change directory to backend"; exit 1; }
-          source venv/bin/activate || { echo "Failed to activate virtual environment"; exit 1; }
+          cd backend
           pip install -r requirements.txt
-          flask db upgrade
+          if ! systemctl restart viber-backend; then
+            echo "Failed to restart backend service"
+            exit 1
+          fi
           
-          # Frontend deployment
           echo "Deploying frontend..."
-          cd ../frontend || { echo "Failed to change directory to frontend"; exit 1; }
-          npm install
-          DISABLE_ESLINT_PLUGIN=true CI=false npm run build
-          
-          # Restart services
-          echo "Restarting services..."
-          systemctl restart viber-backend
-          systemctl restart nginx
+          cd ../frontend
+          npm ci  # Clean install of dependencies
+          npm run build
+          if ! systemctl restart nginx; then
+            echo "Failed to restart nginx"
+            exit 1
+          fi
           
           echo "Deployment completed successfully!"
