@@ -57,15 +57,9 @@ jobs:
           cd backend
           pip install -r requirements.txt
           
-      - name: Verify deployment secrets
+      - name: Verify deployment credentials
         run: |
-          echo "Verifying deployment secrets..."
-          if [ -n "${{ secrets.DEPLOY_HOST }}" ]; then
-            echo "✓ DEPLOY_HOST is properly configured"
-          else
-            echo "✗ DEPLOY_HOST is not set"
-            exit 1
-          fi
+          echo "Verifying deployment credentials..."
           if [ -n "${{ secrets.DEPLOY_USERNAME }}" ]; then
             echo "✓ DEPLOY_USERNAME is properly configured"
           else
@@ -82,12 +76,12 @@ jobs:
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
+          host: 91.99.60.5
           username: ${{ secrets.DEPLOY_USERNAME }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           debug: true
           script: |
-            echo "Starting deployment on ${{ secrets.DEPLOY_HOST }}..."
+            echo "Starting deployment on 91.99.60.5..."
             cd /var/www/viber
             git pull origin main
             
