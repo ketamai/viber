@@ -107,7 +107,21 @@ Viber/
 ```
 
 ## Deployment
-The application is deployed using GitHub workflows to deploy to the production server.
+
+This project uses GitHub Actions for automated deployment. The deployment workflow is triggered automatically when changes are pushed to the `main` branch.
+
+### Deployment Process
+1. Builds the frontend application
+2. Sets up Python environment
+3. Installs dependencies
+4. Deploys to production server
+5. Restarts necessary services
+
+### Infrastructure
+- Frontend: React/Vue.js with Node.js
+- Backend: Python
+- Database: MySQL
+- Server: Nginx
 
 ## Contributing
 
