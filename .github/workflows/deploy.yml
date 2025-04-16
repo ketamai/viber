@@ -43,7 +43,7 @@ jobs:
       with:
         host: 91.99.60.5
         username: root
-        password: ${{ secrets.SSH_PASSWORD }}
+        password: Arabin32
         script: |
           cd /var/www/viber
           git pull
