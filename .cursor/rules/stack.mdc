@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Stack
+- Python backend
+- MySQL database
+- Node/React/Vue JS frontend 
+- Tailwind CSS
+- MySQL database

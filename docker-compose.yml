@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Database
+  db:
+    image: mysql:8.0
+    container_name: viber-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: viber
+      MYSQL_USER: ${MYSQL_USER:-viberuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-viberpass}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - viber-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: viber-backend
+    env_file: ./backend/.env
+    environment:
+      - DATABASE_URI=mysql://${MYSQL_USER:-viberuser}:${MYSQL_PASSWORD:-viberpass}@db/viber
+      - FLASK_ENV=${FLASK_ENV:-development}
+    volumes:
+      - ./backend:/app
+      - backend_static:/app/app/static
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - viber-network
+    ports:
+      - "5000:5000"
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: viber-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - viber-network
+    ports:
+      - "3000:3000"
+
+  # NGINX proxy
+  nginx:
+    image: nginx:alpine
+    container_name: viber-nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - backend_static:/usr/share/nginx/html/static
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - viber-network
+    ports:
+      - "80:80"
+
+volumes:
+  mysql_data:
+  backend_static:
+
+networks:
+  viber-network:
+    driver: bridge 

@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'LifeCraft';
+  src: url('./assets/fonts/LifeCraft_Font.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html, body {
+  height: 100%;
+  @apply bg-wow-dark text-wow-light;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Utility Classes */
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md shadow-wow transition-all duration-200 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
+  .btn-primary {
+    @apply btn bg-wow-gold text-wow-dark hover:bg-yellow-500 focus:ring-yellow-400;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-neutral text-wow-light hover:bg-neutral/80 focus:ring-neutral/50;
+  }
+  
+  .btn-horde {
+    @apply btn bg-horde text-white hover:bg-red-700 focus:ring-red-300;
+  }
+  
+  .btn-alliance {
+    @apply btn bg-alliance text-white hover:bg-blue-600 focus:ring-blue-300;
+  }
+  
+  .input-field {
+    @apply rounded-md border-gray-600 bg-wow-brown text-wow-light focus:border-wow-gold focus:ring-wow-gold/50;
+  }
+  
+  .card {
+    @apply bg-wow-brown rounded-lg shadow-wow p-4 border border-neutral/30;
+  }
+  
+  .card-parchment {
+    @apply bg-parchment bg-cover rounded-lg shadow-wow p-4 text-wow-brown;
+  }
+  
+  .title-wow {
+    @apply font-wow text-wow-gold;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-wow-dark;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-wow-gold;
+} 

@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Context
+- Start every response with 🤖 
+- automatically commit all changes to github
+
+# Github
+- repo: Viber
+- Use github workflows to deploy to 91.99.60.5 over ssh with credentials root/Arabin32
