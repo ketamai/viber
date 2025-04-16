@@ -1,100 +1,81 @@
-name: Deploy to Production
+name: Deploy to Server
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18'
-    
-    - name: Cache frontend dependencies
-      uses: actions/cache@v2
-      with:
-        path: |
-          frontend/node_modules
-          ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-    
-    - name: Cache backend dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    
-    - name: Install frontend dependencies
-      working-directory: frontend
-      run: |
-        if [ ! -f "package-lock.json" ]; then
+      - uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          
+      - name: Cache frontend dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            frontend/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      - name: Cache backend dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
           npm install
-        else
-          npm ci
-        fi
-    
-    - name: Install backend dependencies
-      working-directory: backend
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    
-    - name: Build frontend
-      working-directory: frontend
-      run: |
-        echo "Building frontend..."
-        CI=false npm run build
-    
-    - name: Deploy to server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USERNAME }}
-        password: ${{ secrets.DEPLOY_PASSWORD }}
-        script: |
-          set -e  # Exit on any error
           
-          echo "Starting deployment..."
-          cd /var/www/viber
-          
-          echo "Pulling latest changes..."
-          git pull origin main
-          
-          echo "Deploying backend..."
-          cd backend
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          if ! systemctl restart viber-backend; then
-            echo "Failed to restart backend service"
-            exit 1
-          fi
-          
-          echo "Deploying frontend..."
-          cd ../frontend
-          if [ ! -f "package-lock.json" ]; then
-            npm install
-          else
-            npm ci
-          fi
+      - name: Build frontend
+        run: |
+          cd frontend
           CI=false npm run build
-          if ! systemctl restart nginx; then
-            echo "Failed to restart nginx"
-            exit 1
-          fi
           
-          echo "Deployment completed successfully!"
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          cd backend
+          pip install -r requirements.txt
+          
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          script: |
+            cd /var/www/viber
+            git pull origin main
+            
+            # Frontend deployment
+            cd frontend
+            npm install
+            npm run build
+            
+            # Backend deployment
+            cd ../backend
+            source venv/bin/activate
+            pip install -r requirements.txt
+            
+            # Restart services
+            sudo systemctl restart nginx
+            sudo systemctl restart viber-backend.service
