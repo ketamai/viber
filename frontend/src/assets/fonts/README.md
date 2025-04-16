@@ -34,4 +34,7 @@ This font is donationware. While it's free for personal use, if you find it valu
 The font is implemented in the project using `@font-face` in our CSS and is primarily used for:
 - Headers
 - Navigation elements
-- Special UI components requiring the fantasy/medieval style 
+- Special UI components requiring the fantasy/medieval style
+
+### Font Loading
+The font is loaded using the standard web font loading process. If the font fails to load, the system will fall back to appropriate system fonts to ensure text remains readable. 
