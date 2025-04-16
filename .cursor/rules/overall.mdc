@@ -9,4 +9,6 @@ alwaysApply: true
 
 # Github
 - repo: https://github.com/ketamai/viber
+- branch: main
+- user.email: jesse.lautenbach@protonmail.com
 - Use github workflows to deploy to 91.99.60.5 over ssh with credentials root/Arabin32
